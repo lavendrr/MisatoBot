@@ -211,7 +211,7 @@ async def on_interaction(interaction):
                 await interaction.response.defer()
 
                 membername = interaction.data['options'][0]['value']
-                worksheet = get_worksheet('Summary')
+                worksheet, ws_df = get_worksheet('Summary')
 
                 if interaction.data['options'][0]['name'] == 'mark':
                     if worksheet.cell(worksheet.find(membername).row, worksheet.find(f'Day {get_day()}').col).value == 'FALSE':
