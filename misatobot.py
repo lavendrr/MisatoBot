@@ -34,7 +34,7 @@ print(datetime.now())
 
 def get_worksheet(worksheet_name):
     gclient = gspread.authorize(ServiceAccountCredentials.from_json_keyfile_dict(GOOGLE_KEYS))
-    worksheet = gclient.open('WACB5 Battle Log v3.6 - Leads Report').worksheet(worksheet_name)
+    worksheet = gclient.open('WACB5 Battle Log v3.7 - Leads Report').worksheet(worksheet_name)
     ws_df = gd.get_as_dataframe(worksheet, evaluate_formulas=True)
     return worksheet, ws_df
 
@@ -42,7 +42,7 @@ def get_sheet_as_df():
     #scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_dict(GOOGLE_KEYS)
     gclient = gspread.authorize(creds)
-    worksheet = gclient.open("WACB5 Battle Log v3.6 - Leads Report").worksheet('Battle Log')
+    worksheet = gclient.open("WACB5 Battle Log v3.7 - Leads Report").worksheet('Battle Log')
     ws_df = gd.get_as_dataframe(worksheet, evaluate_formulas=True)
     return worksheet, ws_df
 
@@ -72,38 +72,27 @@ def check_boss_status():
     return (boss, lap, health)
 
 def remaining_teams(team,day):
-    worksheet, df = get_worksheet('Battle Log')
-    # get all players
-    player_df = df.iloc[1:31,[17]]
-    player_df.columns = ['IGN']
-    player_set = set(player_df['IGN'])
-    players_w_id = df.iloc[1:31,[17,18]]
-    players_w_id.columns = ['IGN','Discord_ID']
-    players_w_id['Discord_ID'] = players_w_id['Discord_ID'].apply(lambda x: x[2:-1])
-
-    # get all attackers
-    df = df.iloc[:,[0,5,6]]
-    df.columns = ['Day','Attacker','Team']
-    df = df[(df['Team'] == team) & (df['Day'] == int(day))]
-    attacker_set = set(df['Attacker'])
+    worksheet, df = get_worksheet('Summary')
     
-    remaining = list(player_set - attacker_set)
-    players_w_id = players_w_id[players_w_id['IGN'].isin(remaining)]
-    print(players_w_id)
+    df = df.iloc[2:32, [0, 1, worksheet.find(f'Day {day}').col, worksheet.find(f'Day {day}').col + (team)]]
+    df.columns = ['IGN', 'Discord_ID', 'Hits_Left', 'Remaining']
+    df = df[(df['Remaining'] != 0)]
+    df = df.drop(columns = ['Hits_Left', 'Remaining'])
+    df['Discord_ID'] = df['Discord_ID'].apply(lambda x: x[2:-1])
 
-    return players_w_id
+    return df
 
 def get_day():
     now = datetime.now()
-    if (now.day == 20 and now.hour >= 8) or (now.day == 21 and now.hour < 8):
+    if (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
         day = 1
-    elif (now.day == 21 and now.hour >= 8) or (now.day == 22 and now.hour < 8):
+    elif (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
         day = 2
-    elif (now.day == 22 and now.hour >= 8) or (now.day == 23 and now.hour < 8):
+    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
         day = 3
-    elif (now.day == 23 and now.hour >= 8) or (now.day == 24 and now.hour < 8):
+    elif (now.day == 20 and now.hour >= 7) or (now.day == 21 and now.hour < 7):
         day = 4
-    elif (now.day == 24 and now.hour >= 8) or (now.day == 25 and now.hour < 8):
+    elif (now.day == 21 and now.hour >= 7) or (now.day == 22 and now.hour < 7):
         day = 5
     return(day)
 
@@ -202,7 +191,7 @@ async def on_interaction(interaction):
             out_df = out_df.sort_values(by = ['Status','IGN'])
             out_df['Status'] = out_df['Status'].apply(lambda x:x[1:])
             out_list = [f"{item['Status']} {item['IGN']} - {item['Discord_Name']}" for key,item in out_df.iterrows()]
-            out_str = f"__{interaction.data['options'][0]['value']} Remaining__\n{len(out_list)}/30\n> " + '\n> '.join(out_list)
+            out_str = f"__T{interaction.data['options'][0]['value']} Remaining__\n{len(out_list)}/30\n> " + '\n> '.join(out_list)
 
             await interaction.edit_original_message(content = out_str, allowed_mentions = nextcord.AllowedMentions(users = False))
 
