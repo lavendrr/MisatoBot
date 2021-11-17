@@ -74,13 +74,18 @@ def check_boss_status():
 def remaining_teams(team,day):
     worksheet, df = get_worksheet('Summary')
     
-    df = df.iloc[2:32, [0, 1, worksheet.find(f'Day {day}').col, worksheet.find(f'Day {day}').col + (team)]]
-    df.columns = ['IGN', 'Discord_ID', 'Hits_Left', 'Remaining']
-    df = df[(df['Remaining'] != 0)]
-    df = df.drop(columns = ['Hits_Left', 'Remaining'])
+    print(type(worksheet.find(f'Day {day}').col))
+    df = df.iloc[2:32, [0, 1, worksheet.find(f'Day {day}').col + int(team), worksheet.find(f'Day {day}').col + 5]]
+    df.columns = ['IGN', 'Discord_ID', 'Remaining','Carryover']
     df['Discord_ID'] = df['Discord_ID'].apply(lambda x: x[2:-1])
 
-    return df
+    a_df = df[(df['Remaining'] != 0) & (df['Carryover'].isna())].drop(columns = ['Remaining', 'Carryover'])
+
+    c_df = df[(df['Carryover'].fillna('xx').str[:2] == f'T{team}')].drop(columns = ['Remaining', 'Carryover'])
+
+    b_df = df[(df['Remaining'] != 0) & (df['Carryover']).notna()].drop(columns = ['Remaining'])
+
+    return a_df, c_df, b_df
 
 def get_day():
     now = datetime.now()
@@ -171,27 +176,59 @@ async def on_interaction(interaction):
         elif name == 'team':
             await interaction.response.defer()
 
-            df = remaining_teams(str(interaction.data['options'][0]['value']),str(get_day()))
+            a_df, c_df, b_df = remaining_teams(str(interaction.data['options'][0]['value']),str(get_day()))
+            df_list = [a_df, c_df, b_df]
+
             wacbserver = client.get_guild(788287235237609482)
-            out_df = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
+            a_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
+            c_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
+            b_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
+            out_list = [a_out, c_out, b_out]
 
             for member in wacbserver.members:
-                for key, item in df.iterrows():
-                    if item['Discord_ID'] == str(member.id):
-                        ign = item['IGN']
-                        if member.status == nextcord.Status.online:
-                            out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'1💚'},ignore_index = True)
-                        elif member.status == nextcord.Status.idle:
-                            out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'2💛'},ignore_index = True)
-                        elif member.status == nextcord.Status.dnd:
-                            out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'3❤️'},ignore_index = True)
-                        elif member.status == nextcord.Status.offline:
-                            out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'4🤍'},ignore_index = True)
+                for index, df in enumerate(df_list):
+                    out_df = out_list[index]
+                    for key, item in df.iterrows():
+                        if item['Discord_ID'] == str(member.id):
+                            ign = item['IGN']
+                            if index == 2:
+                                carryover = item['Carryover']
+                                if member.status == nextcord.Status.online:
+                                    out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'1💚','Carryover':carryover},ignore_index = True)
+                                elif member.status == nextcord.Status.idle:
+                                    out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'2💛','Carryover':carryover},ignore_index = True)
+                                elif member.status == nextcord.Status.dnd:
+                                    out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'3❤️','Carryover':carryover},ignore_index = True)
+                                elif member.status == nextcord.Status.offline:
+                                    out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'4🤍','Carryover':carryover},ignore_index = True)
+                            else:
+                                if member.status == nextcord.Status.online:
+                                    out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'1💚'},ignore_index = True)
+                                elif member.status == nextcord.Status.idle:
+                                    out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'2💛'},ignore_index = True)
+                                elif member.status == nextcord.Status.dnd:
+                                    out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'3❤️'},ignore_index = True)
+                                elif member.status == nextcord.Status.offline:
+                                    out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'4🤍'},ignore_index = True)
+                    out_list[index] = out_df
+            
+            for index, out_df in enumerate(out_list):
+                out_df = out_df.sort_values(by = ['Status','IGN'])
+                out_df['Status'] = out_df['Status'].apply(lambda x:x[1:])
+                if index == 2:
+                    out_list[index] = [f"{item['Status']} {item['IGN']} - {item['Discord_Name']} {item['Carryover']}" for key,item in out_df.iterrows()]
+                else:
+                    out_list[index] = [f"{item['Status']} {item['IGN']} - {item['Discord_Name']}" for key,item in out_df.iterrows()]
 
-            out_df = out_df.sort_values(by = ['Status','IGN'])
-            out_df['Status'] = out_df['Status'].apply(lambda x:x[1:])
-            out_list = [f"{item['Status']} {item['IGN']} - {item['Discord_Name']}" for key,item in out_df.iterrows()]
-            out_str = f"__T{interaction.data['options'][0]['value']} Remaining__\n{len(out_list)}/30\n> " + '\n> '.join(out_list)
+            out_str = ''
+            if not(a_df.empty):
+                out_str += f"__**T{interaction.data['options'][0]['value']} Available:**__ {len(out_list[0])}\n> " + '\n> '.join(out_list[0]) + '\n\n'
+            if not(c_df.empty):
+                out_str += f"__**T{interaction.data['options'][0]['value']} Carryover:**__ {len(out_list[1])}\n> " + '\n> '.join(out_list[1]) + '\n\n'
+            if not(b_df.empty):
+                out_str += f"__**T{interaction.data['options'][0]['value']} Blocked:**__ {len(out_list[2])}\n> " + '\n> '.join(out_list[2]) + '\n\n'
+            if out_str == '':
+                out_str += f"__**No T{interaction.data['options'][0]['value']} remaining.**__"
 
             await interaction.edit_original_message(content = out_str, allowed_mentions = nextcord.AllowedMentions(users = False))
 
