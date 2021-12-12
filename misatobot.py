@@ -89,15 +89,15 @@ def remaining_teams(team,day):
 
 def get_day():
     now = datetime.now()
-    if (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
+    if (now.day == 15 and now.hour >= 7) or (now.day == 16 and now.hour < 7):
         day = 1
-    elif (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
+    elif (now.day == 16 and now.hour >= 7) or (now.day == 17 and now.hour < 7):
         day = 2
-    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
+    elif (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
         day = 3
-    elif (now.day == 20 and now.hour >= 7) or (now.day == 21 and now.hour < 7):
+    elif (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
         day = 4
-    elif (now.day == 21 and now.hour >= 7) or (now.day == 22 and now.hour < 7):
+    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
         day = 5
     return(day)
 
@@ -144,7 +144,7 @@ async def on_interaction(interaction):
             if view.value is None:
                 await interaction.edit_original_message(content = '> Timed out.', view = None)
             elif view.value:
-                boss_dict = {1:'https://static.wikia.nocookie.net/princess-connect/images/c/c1/Wyvern.png/revision/latest/scale-to-width-down/121?cb=20181125033728',2:'https://static.wikia.nocookie.net/princess-connect/images/8/8a/WildGriffon.png/revision/latest/scale-to-width-down/121?cb=20181125034631',3:'https://static.wikia.nocookie.net/princess-connect/images/f/f9/Megalapan.jpg/revision/latest/scale-to-width-down/500?cb=20181125035320',4:'https://static.wikia.nocookie.net/princess-connect/images/4/47/SpiritHorn.png/revision/latest/scale-to-width-down/126?cb=20181125035617',5:'https://static.wikia.nocookie.net/princess-connect/images/0/02/SagittariusBoss.jpg/revision/latest/scale-to-width-down/500?cb=20181125040010'}
+                boss_dict = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304500.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305800.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302900.png'}
                 embed = nextcord.Embed(title="Priconne Damage Logging", colour=nextcord.Colour.random(), description="__**Attacker:**__ {}\n__**Team:**__ {}\n__**Lap:**__ {}\n__**Boss:**__ {}\n__**Damage**:__ {}".format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value']), timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
                 embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
                 embed.set_footer(text="Submitted by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
