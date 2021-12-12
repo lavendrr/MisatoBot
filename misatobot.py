@@ -60,7 +60,7 @@ def get_sheet_as_df():
     ws_df = gd.get_as_dataframe(worksheet, evaluate_formulas=True)
     return worksheet, ws_df
 
-def file_log(attacker, team, damage):
+def file_log(attacker, team, damage, pilot=''):
     worksheet, ws_df=get_worksheet('Battle Log')
     ws_df.rename(columns={"Unnamed: 2": "Boss", "Unnamed: 5": "Attacker"}, inplace=True)
     target_row=0
@@ -73,6 +73,7 @@ def file_log(attacker, team, damage):
         worksheet.update('F' + str(target_row), attacker)
         worksheet.update('G' + str(target_row), team)
         worksheet.update('H' + str(target_row), damage)
+        worksheet.update('I' + str(target_row), pilot)
 
 def check_boss_status():
     worksheet, ws_df = get_worksheet('Battle Log')
@@ -137,7 +138,12 @@ async def on_interaction(interaction):
             await interaction.response.defer()
 
             status = check_boss_status()
-            text = '> Log an attack from {} using {} on Lap {} Boss {} with {} damage?'.format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value'])
+            if len(interaction.data['options']) == 4:
+                text = '> Log an attack from {} using {} on Lap {} Boss {} with {} damage piloted by {}?'.format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value'], interaction.data['options'][3]['value'])
+                desc = "__**Attacker:**__ {}\n__**Team:**__ {}\n__**Lap:**__ {}\n__**Boss:**__ {}\n__**Damage:**__ {}\n__**Pilot:**__ {}".format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value'], interaction.data['options'][3]['value'])
+            else:
+                text = '> Log an attack from {} using {} on Lap {} Boss {} with {} damage?'.format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value'])
+                desc = "__**Attacker:**__ {}\n__**Team:**__ {}\n__**Lap:**__ {}\n__**Boss:**__ {}\n__**Damage:**__ {}".format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value'])
             view = confirmview()
 
             await interaction.edit_original_message(content = text, view = view)
@@ -146,7 +152,7 @@ async def on_interaction(interaction):
                 await interaction.edit_original_message(content = '> Timed out.', view = None)
             elif view.value:
                 boss_dict = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304500.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305800.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302900.png'}
-                embed = nextcord.Embed(title="Priconne Damage Logging", colour=nextcord.Colour.random(), description="__**Attacker:**__ {}\n__**Team:**__ {}\n__**Lap:**__ {}\n__**Boss:**__ {}\n__**Damage**:__ {}".format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value']), timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
+                embed = nextcord.Embed(title="Priconne Damage Logging", colour=nextcord.Colour.random(), description=desc, timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
                 embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
                 embed.set_footer(text="Submitted by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
                 embed.set_thumbnail(url=boss_dict[status[0]])
@@ -154,7 +160,11 @@ async def on_interaction(interaction):
                 await interaction.edit_original_message(content = '', embed = embed, view = None)
             
                 print('updating sheet...')
-                file_log(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], interaction.data['options'][2]['value'])
+                if len(interaction.data['options']) == 4:
+                    file_log(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], interaction.data['options'][2]['value'], interaction.data['options'][3]['value'])
+                else:
+                    file_log(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], interaction.data['options'][2]['value'])
+
             else:
                 await interaction.edit_original_message(content = '> Cancelled.', view = None)
                 
