@@ -103,6 +103,17 @@ def remaining_teams(team,day):
 
     return a_df, c_df, b_df
 
+def overflow(day):
+    worksheet, df = get_worksheet('Summary')
+
+    df = df.iloc[2:32, [0, 1, worksheet.find(f'Day {day}').col + 5]]
+    df.columns = ['IGN', 'Discord_ID', 'Carryover']
+    df['Discord_ID'] = df['Discord_ID'].apply(lambda x: x[2:-1])
+
+    c_df = df[df['Carryover'].notna()]
+
+    return c_df
+
 # Define a simple View that gives us a confirmation menu
 class confirmview(nextcord.ui.View):
     def __init__(self):
@@ -240,6 +251,39 @@ async def on_interaction(interaction):
                 out_str += f"__**T{interaction.data['options'][0]['value']} Blocked:**__ {len(out_list[2])}\n> " + '\n> '.join(out_list[2]) + '\n\n'
             if out_str == '':
                 out_str += f"__**No T{interaction.data['options'][0]['value']} remaining.**__"
+
+            await interaction.edit_original_message(content = out_str, allowed_mentions = nextcord.AllowedMentions(users = False))
+        
+        elif name == 'overflow':
+            await interaction.response.defer()
+
+            c_df = overflow(str(get_day()))
+
+            wacbserver = client.get_guild(788287235237609482)
+            out_df = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
+
+            for member in wacbserver.members:
+                for key, item in c_df.iterrows():
+                    if item['Discord_ID'] == str(member.id):
+                        ign = item['IGN']
+                        carryover = item['Carryover']
+                        if member.status == nextcord.Status.online:
+                            out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'1💚','Carryover':carryover},ignore_index = True)
+                        elif member.status == nextcord.Status.idle:
+                            out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'2💛','Carryover':carryover},ignore_index = True)
+                        elif member.status == nextcord.Status.dnd:
+                            out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'3❤️','Carryover':carryover},ignore_index = True)
+                        elif member.status == nextcord.Status.offline:
+                            out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'4🤍','Carryover':carryover},ignore_index = True)
+
+            out_df = out_df.sort_values(by = ['Status','IGN'])
+            out_df['Status'] = out_df['Status'].apply(lambda x:x[1:])
+            out_df = [f"{item['Status']} {item['IGN']} - {item['Discord_Name']} {item['Carryover']}" for key,item in out_df.iterrows()]
+            
+            if not(c_df.empty):
+                out_str = f"__**Overflows:**__ {len(out_df)}\n> " + '\n> '.join(out_df) + '\n\n'
+            else:
+                out_str = f"__**No current overflows.**__"
 
             await interaction.edit_original_message(content = out_str, allowed_mentions = nextcord.AllowedMentions(users = False))
 
