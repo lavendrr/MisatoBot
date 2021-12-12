@@ -32,6 +32,20 @@ client = nextcord.Client(intents=intents)
 
 print(datetime.now())
 
+def get_day():
+    now = datetime.now()
+    if (now.day == 15 and now.hour >= 7) or (now.day == 16 and now.hour < 7):
+        day = 1
+    elif (now.day == 16 and now.hour >= 7) or (now.day == 17 and now.hour < 7):
+        day = 2
+    elif (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
+        day = 3
+    elif (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
+        day = 4
+    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
+        day = 5
+    return(day)
+
 def get_worksheet(worksheet_name):
     gclient = gspread.authorize(ServiceAccountCredentials.from_json_keyfile_dict(GOOGLE_KEYS))
     worksheet = gclient.open('WACB5 Battle Log v3.7 - Leads Report').worksheet(worksheet_name)
@@ -55,6 +69,7 @@ def file_log(attacker, team, damage):
             target_row = index+2
             break
     if target_row > 0:
+        worksheet.update('A' + str(target_row), get_day())
         worksheet.update('F' + str(target_row), attacker)
         worksheet.update('G' + str(target_row), team)
         worksheet.update('H' + str(target_row), damage)
@@ -86,20 +101,6 @@ def remaining_teams(team,day):
     b_df = df[(df['Remaining'] != 0) & (df['Carryover']).notna()].drop(columns = ['Remaining'])
 
     return a_df, c_df, b_df
-
-def get_day():
-    now = datetime.now()
-    if (now.day == 15 and now.hour >= 7) or (now.day == 16 and now.hour < 7):
-        day = 1
-    elif (now.day == 16 and now.hour >= 7) or (now.day == 17 and now.hour < 7):
-        day = 2
-    elif (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
-        day = 3
-    elif (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
-        day = 4
-    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
-        day = 5
-    return(day)
 
 # Define a simple View that gives us a confirmation menu
 class confirmview(nextcord.ui.View):
