@@ -44,6 +44,8 @@ def get_day():
         day = 4
     elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
         day = 5
+    else:
+        day = 1
     return(day)
 
 def get_worksheet(worksheet_name):
@@ -97,7 +99,7 @@ def remaining_teams(team,day):
 
     a_df = df[(df['Remaining'] != 0) & (df['Carryover'].isna())].drop(columns = ['Remaining', 'Carryover'])
 
-    c_df = df[(df['Carryover'].fillna('xx').str[:2] == f'T{team}')].drop(columns = ['Remaining', 'Carryover'])
+    c_df = df[(df['Carryover'].fillna('xx').str[:2] == f'T{team}')].drop(columns = ['Remaining'])
 
     b_df = df[(df['Remaining'] != 0) & (df['Carryover']).notna()].drop(columns = ['Remaining'])
 
@@ -203,7 +205,7 @@ async def on_interaction(interaction):
 
             wacbserver = client.get_guild(788287235237609482)
             a_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
-            c_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
+            c_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
             b_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
             out_list = [a_out, c_out, b_out]
 
@@ -213,7 +215,7 @@ async def on_interaction(interaction):
                     for key, item in df.iterrows():
                         if item['Discord_ID'] == str(member.id):
                             ign = item['IGN']
-                            if index == 2:
+                            if index == 1 or index == 2:
                                 carryover = item['Carryover']
                                 if member.status == nextcord.Status.online:
                                     out_df = out_df.append({'IGN':ign,'Discord_Name':member.mention,'Status':'1💚','Carryover':carryover},ignore_index = True)
@@ -237,7 +239,7 @@ async def on_interaction(interaction):
             for index, out_df in enumerate(out_list):
                 out_df = out_df.sort_values(by = ['Status','IGN'])
                 out_df['Status'] = out_df['Status'].apply(lambda x:x[1:])
-                if index == 2:
+                if index == 1 or index == 2:
                     out_list[index] = [f"{item['Status']} {item['IGN']} - {item['Discord_Name']} {item['Carryover']}" for key,item in out_df.iterrows()]
                 else:
                     out_list[index] = [f"{item['Status']} {item['IGN']} - {item['Discord_Name']}" for key,item in out_df.iterrows()]
