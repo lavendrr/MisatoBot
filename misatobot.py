@@ -198,7 +198,7 @@ async def on_interaction(interaction):
             await interaction.response.defer()
 
             status = check_boss_status()
-            boss_dict = {1:'https://static.wikia.nocookie.net/princess-connect/images/c/c1/Wyvern.png/revision/latest/scale-to-width-down/121?cb=20181125033728',2:'https://static.wikia.nocookie.net/princess-connect/images/8/8a/WildGriffon.png/revision/latest/scale-to-width-down/121?cb=20181125034631',3:'https://static.wikia.nocookie.net/princess-connect/images/f/f9/Megalapan.jpg/revision/latest/scale-to-width-down/500?cb=20181125035320',4:'https://static.wikia.nocookie.net/princess-connect/images/4/47/SpiritHorn.png/revision/latest/scale-to-width-down/126?cb=20181125035617',5:'https://static.wikia.nocookie.net/princess-connect/images/0/02/SagittariusBoss.jpg/revision/latest/scale-to-width-down/500?cb=20181125040010'}
+            boss_dict = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304500.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305800.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302900.png'}
             
             embed = nextcord.Embed(title="Current Boss Status", colour=nextcord.Colour.random(), description="__**Lap:**__ {}\n__**Boss:**__ {}\n__**Health:**__ {}".format(status[1], status[0], status[2]), timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
             embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
