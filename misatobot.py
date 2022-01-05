@@ -216,13 +216,13 @@ async def on_interaction(interaction):
                     a_df, c_df, b_df = remaining_teams(str(interaction.data['options'][0]['value']),str(get_day()))
                     df_list = [a_df, c_df, b_df]
 
-                    wacbserver = client.get_guild(788287235237609482)
+                    clanserver = client.get_guild(923026389807013908)
                     a_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
                     c_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
                     b_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
                     out_list = [a_out, c_out, b_out]
 
-                    for member in wacbserver.members:
+                    for member in clanserver.members:
                         for index, df in enumerate(df_list):
                             out_df = out_list[index]
                             for key, item in df.iterrows():
@@ -272,8 +272,8 @@ async def on_interaction(interaction):
                 elif interaction.data['options'][0]['name'] == 'specific':
                     df = individual_remaining_teams(interaction.data['options'][0]['value'], str(get_day()))
 
-                    wacbserver = client.get_guild(788287235237609482)
-                    for member in wacbserver.members:
+                    clanserver = client.get_guild(923026389807013908)
+                    for member in server.members:
                         if df.iloc[0]['Discord_ID'] == str(member.id):
 
                             teams_list = ['❌', '❌', '❌', '❌', 'N/A']
@@ -303,10 +303,10 @@ async def on_interaction(interaction):
 
             c_df = overflow(str(get_day()))
 
-            wacbserver = client.get_guild(788287235237609482)
+            clanserver = client.get_guild(923026389807013908)
             out_df = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
 
-            for member in wacbserver.members:
+            for member in clanserver.members:
                 for key, item in c_df.iterrows():
                     if item['Discord_ID'] == str(member.id):
                         ign = item['IGN']
