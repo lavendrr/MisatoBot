@@ -179,7 +179,7 @@ async def on_interaction(interaction):
                 await interaction.edit_original_message(content = '> Timed out.', view = None)
             elif view.value:
                 embed = nextcord.Embed(title="Priconne Damage Logging", colour=nextcord.Colour.random(), description=desc, timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
-                embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
+                embed.set_author(name=client.user.name + ' Bot', icon_url=client.user.display_avatar.url)
                 embed.set_footer(text="Submitted by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
                 embed.set_thumbnail(url=BOSS_ICONS[status[0]])
 
@@ -203,7 +203,7 @@ async def on_interaction(interaction):
             status = check_boss_status(clan_sheet)
 
             embed = nextcord.Embed(title="Current Boss Status", colour=nextcord.Colour.random(), description="__**Lap:**__ {}\n__**Boss:**__ {}\n__**Health:**__ {}".format(status[1], status[0], status[2]), timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
-            embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
+            embed.set_author(name=client.user.name + ' Bot', icon_url=client.user.display_avatar.url)
             embed.set_footer(text="Requested by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
             embed.set_thumbnail(url=BOSS_ICONS[status[0]])
             
@@ -291,7 +291,7 @@ async def on_interaction(interaction):
                                 teams_list[4] = str(df.iloc[0]['Carryover'])
 
                             embed = nextcord.Embed(title=f"__{df.iloc[0]['IGN']}'s teams__", colour=nextcord.Colour.random(), description=f"**T1:** {teams_list[0]}\n**T2:** {teams_list[1]}\n**T3**: {teams_list[2]}\n**T4**: {teams_list[3]}\n**Carryover:** {teams_list[4]}", timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
-                            embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
+                            embed.set_author(name=client.user.name + ' Bot', icon_url=client.user.display_avatar.url)
                             embed.set_footer(text="Requested by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
                             embed.set_thumbnail(url=member.display_avatar.url)
 
