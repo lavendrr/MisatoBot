@@ -30,19 +30,21 @@ intents.presences = True
 
 client = nextcord.Client(intents=intents)
 
+BOSS_ICONS = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304600.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305900.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_303900.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_303000.png'}
+
 print(datetime.now())
 
 def get_day():
     now = datetime.now()
-    if (now.day == 15 and now.hour >= 7) or (now.day == 16 and now.hour < 7):
+    if (now.day == 13 and now.hour >= 7) or (now.day == 14 and now.hour < 7):
         day = 1
-    elif (now.day == 16 and now.hour >= 7) or (now.day == 17 and now.hour < 7):
+    elif (now.day == 14 and now.hour >= 7) or (now.day == 15 and now.hour < 7):
         day = 2
-    elif (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
+    elif (now.day == 15 and now.hour >= 7) or (now.day == 16 and now.hour < 7):
         day = 3
-    elif (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
+    elif (now.day == 16 and now.hour >= 7) or (now.day == 17 and now.hour < 7):
         day = 4
-    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
+    elif (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
         day = 5
     return(day)
 
@@ -174,11 +176,10 @@ async def on_interaction(interaction):
             if view.value is None:
                 await interaction.edit_original_message(content = '> Timed out.', view = None)
             elif view.value:
-                boss_dict = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304500.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305800.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302900.png'}
                 embed = nextcord.Embed(title="Priconne Damage Logging", colour=nextcord.Colour.random(), description=desc, timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
                 embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
                 embed.set_footer(text="Submitted by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
-                embed.set_thumbnail(url=boss_dict[status[0]])
+                embed.set_thumbnail(url=BOSS_ICONS[status[0]])
 
                 await interaction.edit_original_message(content = '', embed = embed, view = None)
             
@@ -198,12 +199,11 @@ async def on_interaction(interaction):
             await interaction.response.defer()
 
             status = check_boss_status()
-            boss_dict = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304500.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305800.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302900.png'}
-            
+
             embed = nextcord.Embed(title="Current Boss Status", colour=nextcord.Colour.random(), description="__**Lap:**__ {}\n__**Boss:**__ {}\n__**Health:**__ {}".format(status[1], status[0], status[2]), timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
             embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
             embed.set_footer(text="Requested by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
-            embed.set_thumbnail(url=boss_dict[status[0]])
+            embed.set_thumbnail(url=BOSS_ICONS[status[0]])
             
             await interaction.edit_original_message(embed = embed)
 
