@@ -5,7 +5,6 @@ cachetools==4.2.4
 certifi==2021.5.30
 chardet==4.0.0
 charset-normalizer==2.0.6
-discord
 google-auth==2.2.1
 google-auth-oauthlib==0.4.6
 gspread==4.0.1
