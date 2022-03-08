@@ -1,1 +1,1 @@
-docker login && docker push rmoctezumaf/misatobot:latest
+docker login && docker push rmoctezumaf/misatobot:$1

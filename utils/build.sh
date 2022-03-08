@@ -1,2 +1,2 @@
-docker build -t rmoctezumaf/misatobot:latest .
+docker build -t rmoctezumaf/misatobot:$1 .
 

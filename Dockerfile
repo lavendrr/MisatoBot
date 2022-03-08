@@ -9,4 +9,4 @@ COPY run_in_docker.sh .
 
 RUN pip install -r requirements.txt
 
-CMD ["run_in_docker.sh"]
+CMD ["/bin/bash" , "/app/run_in_docker.sh"] 
