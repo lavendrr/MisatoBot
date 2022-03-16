@@ -30,22 +30,22 @@ intents.presences = True
 
 client = nextcord.Client(intents=intents)
 
-BOSS_ICONS = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304600.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305900.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_303900.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_303000.png'}
-SHEET_NAMES = {'Coomerpie': 'Coomerpie Battle Logs', 'Lux': 'Lux Battle Logs', 'Salivation': 'Salivation Battle Logs'}
+BOSS_ICONS = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302100.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304600.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_303501.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304000.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_300300.png'}
+SHEET_NAMES = {'Coomerpie': 'Coomerpie Battle Logs', 'Eminence': 'Eminence Battle Logs', 'Salivation': 'Salivation Battle Logs'}
 
 print(datetime.now())
 
 def get_day():
     now = datetime.now()
-    if (now.day == 13 and now.hour >= 7) or (now.day == 14 and now.hour < 7):
+    if (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
         day = 1
-    elif (now.day == 14 and now.hour >= 7) or (now.day == 15 and now.hour < 7):
+    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
         day = 2
-    elif (now.day == 15 and now.hour >= 7) or (now.day == 16 and now.hour < 7):
+    elif (now.day == 20 and now.hour >= 7) or (now.day == 21 and now.hour < 7):
         day = 3
-    elif (now.day == 16 and now.hour >= 7) or (now.day == 17 and now.hour < 7):
+    elif (now.day == 21 and now.hour >= 7) or (now.day == 22 and now.hour < 7):
         day = 4
-    elif (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
+    elif (now.day == 22 and now.hour >= 7) or (now.day == 23 and now.hour < 7):
         day = 5
     return(day)
 
@@ -155,7 +155,7 @@ async def on_interaction(interaction):
         if interaction.channel.category_id == 923112036265754715:
             clan_sheet = SHEET_NAMES['Coomerpie']
         elif interaction.channel.category_id == 923026389807013910:
-            clan_sheet = SHEET_NAMES['Lux']
+            clan_sheet = SHEET_NAMES['Eminence']
         elif interaction.channel.category_id == 925548128239755266:
             clan_sheet = SHEET_NAMES['Salivation']
         else:
