@@ -49,22 +49,14 @@ def get_day():
         day = 5
     return(day)
 
-def get_worksheet(worksheet_name):
+def get_worksheet(spreadsheet_name, worksheet_name):
     gclient = gspread.authorize(ServiceAccountCredentials.from_json_keyfile_dict(GOOGLE_KEYS))
-    worksheet = gclient.open('WACB5 Battle Log v3.7 - Leads Report').worksheet(worksheet_name)
+    worksheet = gclient.open(spreadsheet_name).worksheet(worksheet_name)
     ws_df = gd.get_as_dataframe(worksheet, evaluate_formulas=True)
     return worksheet, ws_df
 
-def get_sheet_as_df():
-    #scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(GOOGLE_KEYS)
-    gclient = gspread.authorize(creds)
-    worksheet = gclient.open("WACB5 Battle Log v3.7 - Leads Report").worksheet('Battle Log')
-    ws_df = gd.get_as_dataframe(worksheet, evaluate_formulas=True)
-    return worksheet, ws_df
-
-def file_log(attacker, team, damage, pilot=''):
-    worksheet, ws_df=get_worksheet('Battle Log')
+def file_log(clan_sheet, attacker, team, damage, pilot=''):
+    worksheet, ws_df=get_worksheet(clan_sheet, 'Battle Log')
     ws_df.rename(columns={"Unnamed: 2": "Boss", "Unnamed: 5": "Attacker"}, inplace=True)
     target_row=0
     for index, row in ws_df.iterrows():
@@ -78,8 +70,8 @@ def file_log(attacker, team, damage, pilot=''):
         worksheet.update('H' + str(target_row), damage)
         worksheet.update('I' + str(target_row), pilot)
 
-def check_boss_status():
-    worksheet, ws_df = get_worksheet('Battle Log')
+def check_boss_status(clan_sheet):
+    worksheet, ws_df = get_worksheet(clan_sheet, 'Battle Log')
     ws_df.columns = ws_df.iloc[0,:]
     boss=lap=health=0
     for index, row in ws_df.iterrows():
@@ -90,8 +82,8 @@ def check_boss_status():
             health=ws_df.iloc[index-1]['Health']
     return (boss, lap, health)
 
-def remaining_teams(team,day):
-    worksheet, df = get_worksheet('Summary')
+def remaining_teams(clan_sheet, team, day):
+    worksheet, df = get_worksheet(clan_sheet, 'Summary')
     
     print(type(worksheet.find(f'Day {day}').col))
     df = df.iloc[2:32, [0, 1, worksheet.find(f'Day {day}').col + int(team), worksheet.find(f'Day {day}').col + 5]]
@@ -106,8 +98,8 @@ def remaining_teams(team,day):
 
     return a_df, c_df, b_df
 
-def individual_remaining_teams(member,day):
-    worksheet, df = get_worksheet('Summary')
+def individual_remaining_teams(clan_sheet, member, day):
+    worksheet, df = get_worksheet(clan_sheet, 'Summary')
     day_column = worksheet.find(f'Day {day}').col
 
     df = df.iloc[2:32, [0, 1, day_column + 1, day_column + 2, day_column + 3, day_column + 4, day_column + 5]]
@@ -118,8 +110,8 @@ def individual_remaining_teams(member,day):
 
     return df
 
-def overflow(day):
-    worksheet, df = get_worksheet('Summary')
+def overflow(clan_sheet, day):
+    worksheet, df = get_worksheet(clan_sheet, 'Summary')
 
     df = df.iloc[2:32, [0, 1, worksheet.find(f'Day {day}').col + 5]]
     df.columns = ['IGN', 'Discord_ID', 'Carryover']
@@ -172,7 +164,7 @@ async def on_interaction(interaction):
         if name == 'log':
             await interaction.response.defer()
 
-            status = check_boss_status()
+            status = check_boss_status(clan_sheet)
             if len(interaction.data['options']) == 4:
                 text = '> Log an attack from {} using {} on Lap {} Boss {} with {} damage piloted by {}?'.format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value'], interaction.data['options'][3]['value'])
                 desc = "__**Attacker:**__ {}\n__**Team:**__ {}\n__**Lap:**__ {}\n__**Boss:**__ {}\n__**Damage:**__ {}\n__**Pilot:**__ {}".format(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], status[1], status[0], interaction.data['options'][2]['value'], interaction.data['options'][3]['value'])
@@ -186,19 +178,18 @@ async def on_interaction(interaction):
             if view.value is None:
                 await interaction.edit_original_message(content = '> Timed out.', view = None)
             elif view.value:
-                boss_dict = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304500.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305800.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302900.png'}
                 embed = nextcord.Embed(title="Priconne Damage Logging", colour=nextcord.Colour.random(), description=desc, timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
-                embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
+                embed.set_author(name=client.user.name + ' Bot', icon_url=client.user.display_avatar.url)
                 embed.set_footer(text="Submitted by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
-                embed.set_thumbnail(url=boss_dict[status[0]])
+                embed.set_thumbnail(url=BOSS_ICONS[status[0]])
 
                 await interaction.edit_original_message(content = '', embed = embed, view = None)
             
                 print('updating sheet...')
                 if len(interaction.data['options']) == 4:
-                    file_log(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], interaction.data['options'][2]['value'], interaction.data['options'][3]['value'])
+                    file_log(clan_sheet, interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], interaction.data['options'][2]['value'], interaction.data['options'][3]['value'])
                 else:
-                    file_log(interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], interaction.data['options'][2]['value'])
+                    file_log(clan_sheet, interaction.data['options'][0]['value'], interaction.data['options'][1]['value'], interaction.data['options'][2]['value'])
 
             else:
                 await interaction.edit_original_message(content = '> Cancelled.', view = None)
@@ -209,13 +200,12 @@ async def on_interaction(interaction):
         elif name == 'status':
             await interaction.response.defer()
 
-            status = check_boss_status()
-            boss_dict = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304500.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305800.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302900.png'}
-            
+            status = check_boss_status(clan_sheet)
+
             embed = nextcord.Embed(title="Current Boss Status", colour=nextcord.Colour.random(), description="__**Lap:**__ {}\n__**Boss:**__ {}\n__**Health:**__ {}".format(status[1], status[0], status[2]), timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
-            embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
+            embed.set_author(name=client.user.name + ' Bot', icon_url=client.user.display_avatar.url)
             embed.set_footer(text="Requested by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
-            embed.set_thumbnail(url=boss_dict[status[0]])
+            embed.set_thumbnail(url=BOSS_ICONS[status[0]])
             
             await interaction.edit_original_message(embed = embed)
 
@@ -225,16 +215,16 @@ async def on_interaction(interaction):
 
                 if interaction.data['options'][0]['name'] == 'all':
 
-                    a_df, c_df, b_df = remaining_teams(str(interaction.data['options'][0]['value']),str(get_day()))
+                    a_df, c_df, b_df = remaining_teams(clan_sheet, str(interaction.data['options'][0]['value']),str(get_day()))
                     df_list = [a_df, c_df, b_df]
 
-                    wacbserver = client.get_guild(788287235237609482)
+                    clanserver = client.get_guild(923026389807013908)
                     a_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
                     c_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
                     b_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
                     out_list = [a_out, c_out, b_out]
 
-                    for member in wacbserver.members:
+                    for member in clanserver.members:
                         for index, df in enumerate(df_list):
                             out_df = out_list[index]
                             for key, item in df.iterrows():
@@ -282,10 +272,10 @@ async def on_interaction(interaction):
                     await interaction.edit_original_message(content = out_str, allowed_mentions = nextcord.AllowedMentions(users = False))
 
                 elif interaction.data['options'][0]['name'] == 'specific':
-                    df = individual_remaining_teams(interaction.data['options'][0]['value'], str(get_day()))
+                    df = individual_remaining_teams(clan_sheet, interaction.data['options'][0]['value'], str(get_day()))
 
-                    wacbserver = client.get_guild(788287235237609482)
-                    for member in wacbserver.members:
+                    clanserver = client.get_guild(923026389807013908)
+                    for member in clanserver.members:
                         if df.iloc[0]['Discord_ID'] == str(member.id):
 
                             teams_list = ['❌', '❌', '❌', '❌', 'N/A']
@@ -301,7 +291,7 @@ async def on_interaction(interaction):
                                 teams_list[4] = str(df.iloc[0]['Carryover'])
 
                             embed = nextcord.Embed(title=f"__{df.iloc[0]['IGN']}'s teams__", colour=nextcord.Colour.random(), description=f"**T1:** {teams_list[0]}\n**T2:** {teams_list[1]}\n**T3**: {teams_list[2]}\n**T4**: {teams_list[3]}\n**Carryover:** {teams_list[4]}", timestamp=pytz.utc.localize(datetime.utcnow()).astimezone(pytz.timezone('US/Eastern')))
-                            embed.set_author(name="Misato Bot", url="https://discordapp.com", icon_url="https://cdn.discordapp.com/avatars/892079008857096253/f749c788d86c481e26096319eae36bc1.png?size=256")
+                            embed.set_author(name=client.user.name + ' Bot', icon_url=client.user.display_avatar.url)
                             embed.set_footer(text="Requested by {}".format(interaction.user.display_name), icon_url=interaction.user.display_avatar.url)
                             embed.set_thumbnail(url=member.display_avatar.url)
 
@@ -313,12 +303,12 @@ async def on_interaction(interaction):
         elif name == 'overflow':
             await interaction.response.defer()
 
-            c_df = overflow(str(get_day()))
+            c_df = overflow(clan_sheet, str(get_day()))
 
-            wacbserver = client.get_guild(788287235237609482)
+            clanserver = client.get_guild(923026389807013908)
             out_df = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
 
-            for member in wacbserver.members:
+            for member in clanserver.members:
                 for key, item in c_df.iterrows():
                     if item['Discord_ID'] == str(member.id):
                         ign = item['IGN']
@@ -348,7 +338,7 @@ async def on_interaction(interaction):
                 await interaction.response.defer()
 
                 membername = interaction.data['options'][0]['value']
-                worksheet, ws_df = get_worksheet('Summary')
+                worksheet, ws_df = get_worksheet(clan_sheet, 'Summary')
 
                 if interaction.data['options'][0]['name'] == 'mark':
                     if worksheet.cell(worksheet.find(membername).row, worksheet.find(f'Day {get_day()}').col).value == 'FALSE':
