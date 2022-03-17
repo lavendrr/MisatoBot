@@ -228,7 +228,7 @@ async def on_interaction(interaction):
                     if clan == 'Infinity Kyaru':
                         clanserver = client.get_guild(900914075482087484)
                     elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
-                        clanserver = client.get_guild(788287235237609482)
+                        clanserver = client.get_guild(923026389807013908)
 
                     a_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
                     c_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
@@ -288,7 +288,7 @@ async def on_interaction(interaction):
                     if clan == 'Infinity Kyaru':
                         clanserver = client.get_guild(900914075482087484)
                     elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
-                        clanserver = client.get_guild(788287235237609482)
+                        clanserver = client.get_guild(923026389807013908)
 
                     for member in clanserver.members:
                         if df.iloc[0]['Discord_ID'] == str(member.id):
@@ -323,7 +323,7 @@ async def on_interaction(interaction):
             if clan == 'Infinity Kyaru':
                 clanserver = client.get_guild(900914075482087484)
             elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
-                clanserver = client.get_guild(788287235237609482)
+                clanserver = client.get_guild(923026389807013908)
 
             out_df = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
 
