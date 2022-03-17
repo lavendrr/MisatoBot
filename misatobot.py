@@ -37,15 +37,15 @@ print(datetime.now())
 
 def get_day():
     now = datetime.now()
-    if (now.day == 17 and now.hour >= 7) or (now.day == 18 and now.hour < 7):
+    if (now.day == 17 and now.hour >= 8) or (now.day == 18 and now.hour < 8):
         day = 1
-    elif (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
+    elif (now.day == 18 and now.hour >= 8) or (now.day == 19 and now.hour < 8):
         day = 2
-    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
+    elif (now.day == 19 and now.hour >= 8) or (now.day == 20 and now.hour < 8):
         day = 3
-    elif (now.day == 20 and now.hour >= 7) or (now.day == 21 and now.hour < 7):
+    elif (now.day == 20 and now.hour >= 8) or (now.day == 21 and now.hour < 8):
         day = 4
-    elif (now.day == 21 and now.hour >= 7) or (now.day == 22 and now.hour < 7):
+    elif (now.day == 21 and now.hour >= 8) or (now.day == 22 and now.hour < 8):
         day = 5
     return(day)
 
