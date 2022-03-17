@@ -47,8 +47,6 @@ def get_day():
         day = 4
     elif (now.day == 21 and now.hour >= 7) or (now.day == 22 and now.hour < 7):
         day = 5
-    else:
-        day = 5
     return(day)
 
 def get_worksheet(spreadsheet_name, worksheet_name):
@@ -228,16 +226,16 @@ async def on_interaction(interaction):
                     df_list = [a_df, c_df, b_df]
 
                     if clan == 'Infinity Kyaru':
-                        server = client.get_guild(900914075482087484)
+                        clanserver = client.get_guild(900914075482087484)
                     elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
-                        server = client.get_guild(788287235237609482)
+                        clanserver = client.get_guild(788287235237609482)
 
                     a_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
                     c_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
                     b_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
                     out_list = [a_out, c_out, b_out]
 
-                    for member in server.members:
+                    for member in clanserver.members:
                         for index, df in enumerate(df_list):
                             out_df = out_list[index]
                             for key, item in df.iterrows():
@@ -288,11 +286,11 @@ async def on_interaction(interaction):
                     df = individual_remaining_teams(clan_sheet, interaction.data['options'][0]['value'], str(get_day()))
 
                     if clan == 'Infinity Kyaru':
-                        server = client.get_guild(900914075482087484)
+                        clanserver = client.get_guild(900914075482087484)
                     elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
-                        server = client.get_guild(788287235237609482)
+                        clanserver = client.get_guild(788287235237609482)
 
-                    for member in server.members:
+                    for member in clanserver.members:
                         if df.iloc[0]['Discord_ID'] == str(member.id):
 
                             teams_list = ['❌', '❌', '❌', '❌', 'N/A']
@@ -323,13 +321,13 @@ async def on_interaction(interaction):
             c_df = overflow(clan_sheet, str(get_day()))
 
             if clan == 'Infinity Kyaru':
-                server = client.get_guild(900914075482087484)
+                clanserver = client.get_guild(900914075482087484)
             elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
-                server = client.get_guild(788287235237609482)
+                clanserver = client.get_guild(788287235237609482)
 
             out_df = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
 
-            for member in server.members:
+            for member in clanserver.members:
                 for key, item in c_df.iterrows():
                     if item['Discord_ID'] == str(member.id):
                         ign = item['IGN']
