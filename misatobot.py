@@ -7,7 +7,7 @@ Created on Mon Sep 27 11:34:26 2021
 """
 
 import nextcord
-from datetime import datetime
+from datetime import datetime, timezone
 from nextcord.team import Team
 from nextcord.utils import get
 import pytz
@@ -36,16 +36,16 @@ SHEET_NAMES = {'TamaParade': 'TamaParade Battle Logs', 'Eminence': 'Eminence Bat
 print(datetime.now())
 
 def get_day():
-    now = datetime.now()
-    if (now.day == 17 and now.hour >= 8) or (now.day == 18 and now.hour < 8):
+    now = datetime.now(timezone.utc)
+    if (now.day == 17 and now.hour >= 13) or (now.day == 18 and now.hour < 13):
         day = 1
-    elif (now.day == 18 and now.hour >= 8) or (now.day == 19 and now.hour < 8):
+    elif (now.day == 18 and now.hour >= 13) or (now.day == 19 and now.hour < 13):
         day = 2
-    elif (now.day == 19 and now.hour >= 8) or (now.day == 20 and now.hour < 8):
+    elif (now.day == 19 and now.hour >= 13) or (now.day == 20 and now.hour < 13):
         day = 3
-    elif (now.day == 20 and now.hour >= 8) or (now.day == 21 and now.hour < 8):
+    elif (now.day == 20 and now.hour >= 13) or (now.day == 21 and now.hour < 13):
         day = 4
-    elif (now.day == 21 and now.hour >= 8) or (now.day == 22 and now.hour < 8):
+    elif (now.day == 21 and now.hour >= 13) or (now.day == 22 and now.hour < 13):
         day = 5
     return(day)
 
