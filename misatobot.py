@@ -162,7 +162,7 @@ async def on_interaction(interaction):
         elif interaction.channel.category_id == 925548128239755266:
             clan_sheet = SHEET_NAMES['Salivation']
             clan = 'Salivation'
-        elif interaction.channel.category_id == 902235899587350579:
+        elif interaction.channel.category_id == 946627063534747678:
             clan_sheet = SHEET_NAMES['Infinity Kyaru']
             clan = 'Infinity Kyaru'
         else:
@@ -226,7 +226,7 @@ async def on_interaction(interaction):
                     df_list = [a_df, c_df, b_df]
 
                     if clan == 'Infinity Kyaru':
-                        clanserver = client.get_guild(900914075482087484)
+                        clanserver = client.get_guild(654218111003787264)
                     elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
                         clanserver = client.get_guild(923026389807013908)
 
@@ -286,7 +286,7 @@ async def on_interaction(interaction):
                     df = individual_remaining_teams(clan_sheet, interaction.data['options'][0]['value'], str(get_day()))
 
                     if clan == 'Infinity Kyaru':
-                        clanserver = client.get_guild(900914075482087484)
+                        clanserver = client.get_guild(654218111003787264)
                     elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
                         clanserver = client.get_guild(923026389807013908)
 
@@ -321,7 +321,7 @@ async def on_interaction(interaction):
             c_df = overflow(clan_sheet, str(get_day()))
 
             if clan == 'Infinity Kyaru':
-                clanserver = client.get_guild(900914075482087484)
+                clanserver = client.get_guild(654218111003787264)
             elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
                 clanserver = client.get_guild(923026389807013908)
 
