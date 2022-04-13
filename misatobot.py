@@ -7,7 +7,7 @@ Created on Mon Sep 27 11:34:26 2021
 """
 
 import nextcord
-from datetime import datetime
+from datetime import datetime, timezone
 from nextcord.team import Team
 from nextcord.utils import get
 import pytz
@@ -30,22 +30,22 @@ intents.presences = True
 
 client = nextcord.Client(intents=intents)
 
-BOSS_ICONS = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302100.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304600.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_303501.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304000.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_300300.png'}
-SHEET_NAMES = {'Coomerpie': 'Coomerpie Battle Logs', 'Eminence': 'Eminence Battle Logs', 'Salivation': 'Salivation Battle Logs'}
+BOSS_ICONS = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305100.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_301101.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_300100.png'}
+SHEET_NAMES = {'TamaParade': 'TamaParade Battle Logs', 'Eminence': 'Eminence Battle Logs', 'Salivation': 'Salivation Battle Logs', 'Infinity Kyaru': 'Infinity Kyaru Battle Logs'}
 
 print(datetime.now())
 
 def get_day():
-    now = datetime.now()
-    if (now.day == 18 and now.hour >= 7) or (now.day == 19 and now.hour < 7):
+    now = datetime.now(timezone.utc)
+    if (now.day == 17 and now.hour >= 13) or (now.day == 18 and now.hour < 13):
         day = 1
-    elif (now.day == 19 and now.hour >= 7) or (now.day == 20 and now.hour < 7):
+    elif (now.day == 18 and now.hour >= 13) or (now.day == 19 and now.hour < 13):
         day = 2
-    elif (now.day == 20 and now.hour >= 7) or (now.day == 21 and now.hour < 7):
+    elif (now.day == 19 and now.hour >= 13) or (now.day == 20 and now.hour < 13):
         day = 3
-    elif (now.day == 21 and now.hour >= 7) or (now.day == 22 and now.hour < 7):
+    elif (now.day == 20 and now.hour >= 13) or (now.day == 21 and now.hour < 13):
         day = 4
-    elif (now.day == 22 and now.hour >= 7) or (now.day == 23 and now.hour < 7):
+    elif (now.day == 21 and now.hour >= 13) or (now.day == 22 and now.hour < 13):
         day = 5
     return(day)
 
@@ -151,13 +151,20 @@ async def on_interaction(interaction):
     print(interaction.type)
     if interaction.type == nextcord.InteractionType.application_command:
         name = interaction.data['name']
+        clan = ''
 
         if interaction.channel.category_id == 923112036265754715:
-            clan_sheet = SHEET_NAMES['Coomerpie']
+            clan_sheet = SHEET_NAMES['TamaParade']
+            clan = 'TamaParade'
         elif interaction.channel.category_id == 923026389807013910:
             clan_sheet = SHEET_NAMES['Eminence']
+            clan = 'Eminence'
         elif interaction.channel.category_id == 925548128239755266:
             clan_sheet = SHEET_NAMES['Salivation']
+            clan = 'Salivation'
+        elif interaction.channel.category_id == 946627063534747678:
+            clan_sheet = SHEET_NAMES['Infinity Kyaru']
+            clan = 'Infinity Kyaru'
         else:
             await interaction.response.send_message(content = '> Please use commands in your clan\'s discord channels.')
 
@@ -218,7 +225,11 @@ async def on_interaction(interaction):
                     a_df, c_df, b_df = remaining_teams(clan_sheet, str(interaction.data['options'][0]['value']),str(get_day()))
                     df_list = [a_df, c_df, b_df]
 
-                    clanserver = client.get_guild(923026389807013908)
+                    if clan == 'Infinity Kyaru':
+                        clanserver = client.get_guild(654218111003787264)
+                    elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
+                        clanserver = client.get_guild(923026389807013908)
+
                     a_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status'])
                     c_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
                     b_out = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
@@ -274,7 +285,11 @@ async def on_interaction(interaction):
                 elif interaction.data['options'][0]['name'] == 'specific':
                     df = individual_remaining_teams(clan_sheet, interaction.data['options'][0]['value'], str(get_day()))
 
-                    clanserver = client.get_guild(923026389807013908)
+                    if clan == 'Infinity Kyaru':
+                        clanserver = client.get_guild(654218111003787264)
+                    elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
+                        clanserver = client.get_guild(923026389807013908)
+
                     for member in clanserver.members:
                         if df.iloc[0]['Discord_ID'] == str(member.id):
 
@@ -305,7 +320,11 @@ async def on_interaction(interaction):
 
             c_df = overflow(clan_sheet, str(get_day()))
 
-            clanserver = client.get_guild(923026389807013908)
+            if clan == 'Infinity Kyaru':
+                clanserver = client.get_guild(654218111003787264)
+            elif clan == 'TamaParade' or clan == 'Eminence' or clan == 'Salivation':
+                clanserver = client.get_guild(923026389807013908)
+
             out_df = pd.DataFrame(columns = ['IGN', 'Discord_Name', 'Status', 'Carryover'])
 
             for member in clanserver.members:
