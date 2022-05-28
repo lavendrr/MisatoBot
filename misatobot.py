@@ -30,22 +30,22 @@ intents.presences = True
 
 client = nextcord.Client(intents=intents)
 
-BOSS_ICONS = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302100.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302000.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304500.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_306900.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302600.png'}
+BOSS_ICONS = {1:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305700.png',2:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_304600.png',3:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_301001.png',4:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_305800.png',5:'https://pricalc.b-cdn.net/jp/unit/extract/latest/icon_unit_302701.png'}
 SHEET_NAMES = {'TamaParade': 'TamaParade Battle Logs', 'Eminence': 'Eminence Battle Logs', 'Salivation': 'Salivation Battle Logs', 'Infinity Kyaru': 'Infinity Kyaru Battle Logs'}
 
 print(datetime.now())
 
 def get_day():
     now = datetime.now(timezone.utc)
-    if (now.day == 26 and now.hour >= 13) or (now.day == 27 and now.hour < 13):
+    if (now.day == 25 and now.hour >= 13) or (now.day == 26 and now.hour < 13):
         day = 1
-    elif (now.day == 27 and now.hour >= 13) or (now.day == 28 and now.hour < 13):
+    elif (now.day == 26 and now.hour >= 13) or (now.day == 27 and now.hour < 13):
         day = 2
-    elif (now.day == 28 and now.hour >= 13) or (now.day == 29 and now.hour < 13):
+    elif (now.day == 27 and now.hour >= 13) or (now.day == 28 and now.hour < 13):
         day = 3
-    elif (now.day == 29 and now.hour >= 13) or (now.day == 30 and now.hour < 13):
+    elif (now.day == 28 and now.hour >= 13) or (now.day == 29 and now.hour < 13):
         day = 4
-    elif (now.day == 30 and now.hour >= 13) or (now.day == 1 and now.hour < 13):
+    elif (now.day == 29 and now.hour >= 13) or (now.day == 30 and now.hour < 13):
         day = 5
     return(day)
 
